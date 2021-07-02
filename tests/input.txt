@@ -1,1 +1,3 @@
+sh3add.uw a3,s5,gp
+
 add.uw a2, s11, s5

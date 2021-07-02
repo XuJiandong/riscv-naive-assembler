@@ -2,7 +2,7 @@ use clap::{App, Arg};
 use lazy_static::lazy_static;
 use std::collections::HashMap;
 use std::fs::File;
-use std::io::{Read, Stdin, Stdout};
+use std::io::Read;
 use std::{fmt, io};
 
 lazy_static! {
@@ -16,7 +16,8 @@ lazy_static! {
         map.insert(String::from("t0"), 5);
         map.insert(String::from("t1"), 6);
         map.insert(String::from("t2"), 7);
-        map.insert(String::from("s0"), 8); // fp
+        map.insert(String::from("s0"), 8); // s0 == fp
+        map.insert(String::from("fp"), 8); // s0 == fp
         map.insert(String::from("s1"), 9);
         map.insert(String::from("a0"), 10);
         map.insert(String::from("a1"), 11);
@@ -357,6 +358,199 @@ impl TextInstruction {
                 res.set_2operands(&self.operands, 0b00010);
                 Some(res)
             }
+            "cpopw" => {
+                res.set_opcode(0b0011011);
+                res.set_funct3(0b001);
+                res.set_funct7(0b0110000);
+                res.set_2operands(&self.operands, 0b00010);
+                Some(res)
+            }
+            "ctz" => {
+                res.set_opcode(0b0010011);
+                res.set_funct3(0b001);
+                res.set_funct7(0b0110000);
+                res.set_2operands(&self.operands, 0b00001);
+                Some(res)
+            }
+            "ctzw" => {
+                res.set_opcode(0b0011011);
+                res.set_funct3(0b001);
+                res.set_funct7(0b0110000);
+                res.set_2operands(&self.operands, 0b00001);
+                Some(res)
+            }
+            "max" => {
+                res.set_opcode(0b0110011);
+                res.set_funct3(0b11);
+                res.set_funct7(0b0000101);
+                res.set_operands(&self.operands);
+                Some(res)
+            }
+            "maxu" => {
+                res.set_opcode(0b0110011);
+                res.set_funct3(0b111);
+                res.set_funct7(0b0000101);
+                res.set_operands(&self.operands);
+                Some(res)
+            }
+            "min" => {
+                res.set_opcode(0b0110011);
+                res.set_funct3(0b100);
+                res.set_funct7(0b0000101);
+                res.set_operands(&self.operands);
+                Some(res)
+            }
+            "minu" => {
+                res.set_opcode(0b0110011);
+                res.set_funct3(0b101);
+                res.set_funct7(0b0000101);
+                res.set_operands(&self.operands);
+                Some(res)
+            }
+            "orc.b" => {
+                res.set_opcode(0b0010011);
+                res.set_funct3(0b101);
+                res.set_funct7(0b0010100);
+                res.set_2operands(&self.operands, 0b00111);
+                Some(res)
+            }
+            "orn" => {
+                res.set_opcode(0b0110011);
+                res.set_funct3(0b110);
+                res.set_funct7(0b0100000);
+                res.set_operands(&self.operands);
+                Some(res)
+            }
+            "rev8" => {
+                res.set_opcode(0b0010011);
+                res.set_funct3(0b101);
+                res.set_funct7(0b0110101);
+                res.set_2operands(&self.operands, 0b11000);
+                Some(res)
+            }
+            "rol" => {
+                res.set_opcode(0b0110011);
+                res.set_funct3(0b001);
+                res.set_funct7(0b0110000);
+                res.set_operands(&self.operands);
+                Some(res)
+            }
+            "rolw" => {
+                res.set_opcode(0b0111011);
+                res.set_funct3(0b001);
+                res.set_funct7(0b0110000);
+                res.set_operands(&self.operands);
+                Some(res)
+            }
+            "ror" => {
+                res.set_opcode(0b110011);
+                res.set_funct3(0b101);
+                res.set_funct7(0b0110000);
+                res.set_operands(&self.operands);
+                Some(res)
+            }
+            "rori" => {
+                res.set_opcode(0b0010011);
+                res.set_funct3(0b101);
+                res.set_funct6(0b011000);
+                res.set_immediate(&self.operands);
+                Some(res)
+            }
+            "roriw" => {
+                res.set_opcode(0b0011011);
+                res.set_funct3(0b101);
+                res.set_funct7(0b0110000);
+
+                let shamt = self.operands[2].parse::<u8>().unwrap();
+                let mut operands = self.operands.clone();
+                operands.pop();
+                res.set_2operands(&operands, shamt);
+                Some(res)
+            }
+            "rorw" => {
+                res.set_opcode(0b0111011);
+                res.set_funct3(0b101);
+                res.set_funct7(0b0110000);
+                res.set_operands(&self.operands);
+                Some(res)
+            }
+            "sext.b" => {
+                res.set_opcode(0b0010011);
+                res.set_funct3(0b001);
+                res.set_funct7(0b0110000);
+                res.set_2operands(&self.operands, 0b00100);
+                Some(res)
+            }
+            "sext.h" => {
+                res.set_opcode(0b0010011);
+                res.set_funct3(0b001);
+                res.set_funct7(0b0110000);
+                res.set_2operands(&self.operands, 0b00101);
+                Some(res)
+            }
+            "sh1add" => {
+                res.set_opcode(0b0110011);
+                res.set_funct3(0b010);
+                res.set_funct7(0b0010000);
+                res.set_operands(&self.operands);
+                Some(res)
+            }
+            "sh1add.uw" => {
+                res.set_opcode(0b0111011);
+                res.set_funct3(0b010);
+                res.set_funct7(0b0010000);
+                res.set_operands(&self.operands);
+                Some(res)
+            }
+            "sh2add" => {
+                res.set_opcode(0b0110011);
+                res.set_funct3(0b100);
+                res.set_funct7(0b0010000);
+                res.set_operands(&self.operands);
+                Some(res)
+            }
+            "sh2add.uw" => {
+                res.set_opcode(0b0111011);
+                res.set_funct3(0b100);
+                res.set_funct7(0b0010000);
+                res.set_operands(&self.operands);
+                Some(res)
+            }
+            "sh3add" => {
+                res.set_opcode(0b0110011);
+                res.set_funct3(0b110);
+                res.set_funct7(0b0010000);
+                res.set_operands(&self.operands);
+                Some(res)
+            }
+            "sh3add.uw" => {
+                res.set_opcode(0b0111011);
+                res.set_funct3(0b110);
+                res.set_funct7(0b0010000);
+                res.set_operands(&self.operands);
+                Some(res)
+            }
+            "slli.uw" => {
+                res.set_opcode(0b0011011);
+                res.set_funct3(0b001);
+                res.set_funct6(0b000010);
+                res.set_immediate(&self.operands);
+                Some(res)
+            }
+            "xnor" => {
+                res.set_opcode(0b0110011);
+                res.set_funct3(0b100);
+                res.set_funct7(0b0100000);
+                res.set_operands(&self.operands);
+                Some(res)
+            }
+            "zext.h" => {
+                res.set_opcode(0b0111011);
+                res.set_funct3(0b100);
+                res.set_funct7(0b0000100);
+                res.set_2operands(&self.operands, 0b00000);
+                Some(res)
+            }
             _ => None,
         }
     }
@@ -412,6 +606,11 @@ fn test_bclr() {
 }
 
 #[test]
+fn test_others() {
+    test("sh3add.uw a3,s5,gp", ".byte 0xbb,0xe6,0x3a,0x20");
+}
+
+#[test]
 fn test_add() {
     test("add t6, t6, s0", "add t6,t6,s0");
     test("xor t6, t6, s6", "xor t6,t6,s6");
@@ -428,13 +627,6 @@ fn main() {
                 .long("input")
                 .takes_value(true)
                 .help("input file, default stdin"),
-        )
-        .arg(
-            Arg::with_name("output")
-                .required(false)
-                .short("o")
-                .long("output")
-                .help("output file, default stdout"),
         )
         .arg(
             Arg::with_name("debug")
