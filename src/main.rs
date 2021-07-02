@@ -381,7 +381,7 @@ impl TextInstruction {
             }
             "max" => {
                 res.set_opcode(0b0110011);
-                res.set_funct3(0b11);
+                res.set_funct3(0b110);
                 res.set_funct7(0b0000101);
                 res.set_operands(&self.operands);
                 Some(res)
